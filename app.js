@@ -237,9 +237,11 @@ function renderWords() {
           ${w.comment ? `<span class="td-comment">${esc(w.comment)}</span>` : ''}
         </td>
         <td class="td-actions">
+          <button class="btn-icon speak" title="Произнести">🔊</button>
           <button class="btn-icon edit" title="Редактировать">✏️</button>
           <button class="btn-icon delete" title="Удалить">🗑</button>
         </td>`;
+      tr.querySelector('.speak').addEventListener('click', e => { e.stopPropagation(); speak(w.word, lang.emoji); });
       tr.querySelector('.edit').addEventListener('click', e => { e.stopPropagation(); openWordModal(w); });
       tr.querySelector('.delete').addEventListener('click', e => { e.stopPropagation(); confirmDeleteWord(w); });
       tr.addEventListener('click', () => openWordView(w));
@@ -652,7 +654,12 @@ function showFCCard() {
   const reveal = document.getElementById('btn-reveal');
   const btns   = document.getElementById('fc-buttons');
 
-  front.textContent = w.word;
+  front.innerHTML = `${esc(w.word)} <button class="fc-speak-btn" title="Произнести">🔊</button>`;
+  front.querySelector('.fc-speak-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    const lang = state.languages.find(l => l.id === w.langId);
+    speak(w.word, lang ? lang.emoji : '');
+  });
   back.style.display = 'none';
   back.innerHTML = `
     <div class="translation">${esc(w.translation)}</div>
@@ -732,6 +739,10 @@ function openWordView(word) {
   if (word.comment) { viewComment.textContent = word.comment; cmSec.style.display = ''; }
   else cmSec.style.display = 'none';
 
+  // speak button
+  const speakBtn = document.getElementById('view-speak-btn');
+  speakBtn.onclick = () => speak(word.word, lang ? lang.emoji : '');
+
   modalView.style.display = 'flex';
 }
 
@@ -799,6 +810,34 @@ function loadDemoData() {
   ];
   words.forEach(w => state.words.push({ id: uid(), langId, ...w }));
   saveState();
+}
+
+/* ===== SPEECH ===== */
+const FLAG_TO_LANG = {
+  'gb': 'en-GB', 'us': 'en-US', 'au': 'en-AU',
+  'ru': 'ru-RU', 'ua': 'uk-UA', 'by': 'be-BY',
+  'de': 'de-DE', 'at': 'de-AT', 'ch': 'de-CH',
+  'fr': 'fr-FR', 'be': 'fr-BE',
+  'es': 'es-ES', 'mx': 'es-MX', 'ar': 'es-AR',
+  'it': 'it-IT',
+  'pt': 'pt-PT', 'br': 'pt-BR',
+  'pl': 'pl-PL',
+  'nl': 'nl-NL',
+  'tr': 'tr-TR',
+  'jp': 'ja-JP',
+  'cn': 'zh-CN',
+  'kr': 'ko-KR',
+  'sa': 'ar-SA',
+  'in': 'hi-IN',
+};
+
+function speak(text, flagCode) {
+  if (!window.speechSynthesis || !text) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = FLAG_TO_LANG[flagCode] || 'en-US';
+  utter.rate = 0.9;
+  window.speechSynthesis.speak(utter);
 }
 
 /* ===== INIT ===== */
