@@ -1,6 +1,12 @@
 /* ===== RESET & BASE ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
 :root {
@@ -241,6 +247,7 @@ main {
 /* ===== TABLE ===== */
 #words-table {
   width: 100%;
+  min-width: 0;
   border-collapse: separate;
   border-spacing: 0;
   background: var(--surface);
@@ -248,7 +255,19 @@ main {
   box-shadow: var(--shadow);
   overflow: hidden;
   border: 1.5px solid var(--border);
+  table-layout: fixed;
 }
+
+#words-table td, #words-table th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#words-table .td-word    { width: 25%; }
+#words-table .td-translation { width: 30%; }
+#words-table .td-transcription { width: 20%; }
+#words-table .td-example { width: 20%; white-space: normal; }
+#words-table .td-actions { width: 5%; }
 
 #words-table thead tr {
   background: linear-gradient(90deg, #fff0f6 0%, #f9f0ff 100%);
