@@ -362,11 +362,12 @@ main {
   background: rgba(61,34,53,0.4);
   backdrop-filter: blur(4px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 200;
   padding: 16px;
   animation: overlayIn 0.18s ease;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
