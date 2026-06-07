@@ -687,6 +687,15 @@ main {
   padding: 8px 12px;
   border-radius: 0 8px 8px 0;
 }
+.view-example-ru {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 6px 12px 0;
+  font-style: normal;
+}
+.view-example-ru:empty { display: none; }
+
 .view-comment {
   font-size: 13px;
   color: var(--text-muted);

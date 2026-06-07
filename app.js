@@ -37,6 +37,7 @@ const fieldWord     = document.getElementById('field-word');
 const fieldTrans    = document.getElementById('field-translation');
 const fieldTranscr  = document.getElementById('field-transcription');
 const fieldExample  = document.getElementById('field-example');
+const fieldExampleRu= document.getElementById('field-example-ru');
 const fieldComment  = document.getElementById('field-comment');
 const btnCancelWord = document.getElementById('btn-cancel-word');
 
@@ -287,6 +288,7 @@ function openWordModal(word) {
   fieldTrans.value       = word ? word.translation : '';
   fieldTranscr.value     = word ? (word.transcription || '') : '';
   fieldExample.value     = word ? (word.example || '') : '';
+  fieldExampleRu.value   = word ? (word.exampleRu || '') : '';
   fieldComment.value     = word ? (word.comment || '') : '';
   modalWord.style.display = 'flex';
   fieldWord.focus();
@@ -305,6 +307,7 @@ formWord.addEventListener('submit', e => {
     translation:   fieldTrans.value.trim(),
     transcription: fieldTranscr.value.trim(),
     example:       fieldExample.value.trim(),
+    exampleRu:     fieldExampleRu.value.trim(),
     comment:       fieldComment.value.trim(),
     langId:        state.activeLangId,
   };
@@ -689,8 +692,12 @@ function openWordView(word) {
 
   const exSec = document.getElementById('view-example-section');
   const cmSec = document.getElementById('view-comment-section');
-  if (word.example) { viewExample.textContent = word.example; exSec.style.display = ''; }
-  else exSec.style.display = 'none';
+  if (word.example) {
+    viewExample.textContent = word.example;
+    const viewExRu = document.getElementById('view-example-ru');
+    viewExRu.textContent = word.exampleRu || '';
+    exSec.style.display = '';
+  } else exSec.style.display = 'none';
   if (word.comment) { viewComment.textContent = word.comment; cmSec.style.display = ''; }
   else cmSec.style.display = 'none';
 
@@ -744,26 +751,26 @@ function loadDemoData() {
   state.languages.push({ id: langId, name: 'Английский', emoji: 'gb' });
   state.activeLangId = langId;
   const words = [
-    { word: 'Serendipity', translation: 'Счастливая случайность', transcription: '/ˌser.ənˈdɪp.ɪ.ti/', example: 'Finding that old letter was pure serendipity.', comment: 'Приятное событие, которое случилось само собой' },
-    { word: 'Petrichor', translation: 'Запах земли после дождя', transcription: '/ˈpet.rɪ.kɔːr/', example: 'She loved the petrichor after a summer storm.', comment: 'От греч. petra — камень, ichor — кровь богов' },
-    { word: 'Ephemeral', translation: 'Мимолётный, недолговечный', transcription: '/ɪˈfem.ər.əl/', example: 'The beauty of cherry blossoms is ephemeral.', comment: 'О чём-то прекрасном но быстро исчезающем' },
-    { word: 'Sonder', translation: 'Осознание, что у каждого своя жизнь', transcription: '/ˈsɒn.dər/', example: 'Sitting in a café, she felt a deep sense of sonder.', comment: 'Неологизм из Dictionary of Obscure Sorrows' },
-    { word: 'Mellifluous', translation: 'Медоточивый, сладкозвучный', transcription: '/məˈlɪf.lu.əs/', example: 'Her mellifluous voice filled the concert hall.', comment: 'О приятном звучании голоса или музыки' },
-    { word: 'Ineffable', translation: 'Невыразимый словами', transcription: '/ɪnˈef.ə.bəl/', example: 'The view from the mountain was ineffable.', comment: 'Когда красота настолько велика, что нет слов' },
-    { word: 'Hiraeth', translation: 'Тоска по родине или прошлому', transcription: '/ˈhɪər.aɪθ/', example: 'She felt hiraeth every time she heard that old song.', comment: 'Валлийское слово, нет точного перевода на русский' },
-    { word: 'Limerence', translation: 'Состояние влюблённости и навязчивых мыслей', transcription: '/ˈlɪm.ər.əns/', example: 'He was lost in limerence, thinking of her constantly.', comment: 'Психологический термин Дороти Теннов' },
-    { word: 'Catharsis', translation: 'Очищение через сильные эмоции', transcription: '/kəˈθɑː.sɪs/', example: 'Crying during the film was a real catharsis for her.', comment: 'Из античной философии Аристотеля' },
-    { word: 'Susurrus', translation: 'Шёпот, тихий шелест', transcription: '/suːˈsʌr.əs/', example: 'The susurrus of leaves calmed her nerves.', comment: 'Поэтическое слово для нежного звука' },
-    { word: 'Vellichor', translation: 'Странная меланхолия в старом книжном магазине', transcription: '/ˈvel.ɪ.kɔːr/', example: 'She felt vellichor browsing dusty shelves for hours.', comment: 'Ещё один неологизм из Dictionary of Obscure Sorrows' },
-    { word: 'Phosphene', translation: 'Свет, который видишь когда трёшь глаза', transcription: '/ˈfɒs.fiːn/', example: 'Pressing her palms to her eyes, she saw bright phosphenes.', comment: 'Визуальное ощущение без реального источника света' },
-    { word: 'Eudaimonia', translation: 'Счастье как состояние расцвета', transcription: '/juːˌdaɪˈməʊ.ni.ə/', example: 'True eudaimonia comes from living a meaningful life.', comment: 'Аристотель считал это высшей целью человека' },
-    { word: 'Kenopsia', translation: 'Жуткое ощущение от пустого многолюдного места', transcription: '/kɛˈnɒp.si.ə/', example: 'The empty stadium filled her with kenopsia.', comment: 'Торговый центр ночью, пустая школа летом' },
-    { word: 'Yugen', translation: 'Глубокое осознание красоты вселенной', transcription: '/juːˈɡen/', example: 'Watching the fog roll over the mountains, he felt yugen.', comment: 'Японская эстетическая концепция' },
-    { word: 'Quiddity', translation: 'Сущность, самая суть вещи', transcription: '/ˈkwɪd.ɪ.ti/', example: 'The quiddity of her art was impossible to define.', comment: 'Философский термин — то, что делает вещь собой' },
-    { word: 'Lassitude', translation: 'Усталость, вялость, апатия', transcription: '/ˈlæs.ɪ.tjuːd/', example: 'A profound lassitude overcame her after the journey.', comment: 'Более поэтично чем просто tiredness' },
-    { word: 'Sempiternal', translation: 'Вечный, бесконечный', transcription: '/ˌsem.pɪˈtɜː.nəl/', example: 'Their love felt sempiternal, beyond time itself.', comment: 'Возвышеннее чем eternal — вечность без начала и конца' },
-    { word: 'Labyrinthine', translation: 'Запутанный как лабиринт', transcription: '/ˌlæb.ɪˈrɪn.θaɪn/', example: 'The labyrinthine streets of the old city confused every tourist.', comment: 'О чём-то сложном и запутанном' },
-    { word: 'Numinous', translation: 'Внушающий благоговейный страх и восторг', transcription: '/ˈnjuː.mɪ.nəs/', example: 'Standing in the ancient temple felt truly numinous.', comment: 'Ощущение чего-то священного и таинственного' },
+    { word: 'Serendipity', translation: 'Счастливая случайность', transcription: '/ˌser.ənˈdɪp.ɪ.ti/', example: 'Finding that old letter was pure serendipity.', exampleRu: 'Найти то старое письмо было настоящей счастливой случайностью.', comment: 'Приятное событие, которое случилось само собой' },
+    { word: 'Petrichor', translation: 'Запах земли после дождя', transcription: '/ˈpet.rɪ.kɔːr/', example: 'She loved the petrichor after a summer storm.', exampleRu: 'Она обожала запах земли после летней грозы.', comment: 'От греч. petra — камень, ichor — кровь богов' },
+    { word: 'Ephemeral', translation: 'Мимолётный, недолговечный', transcription: '/ɪˈfem.ər.əl/', example: 'The beauty of cherry blossoms is ephemeral.', exampleRu: 'Красота цветущей сакуры мимолётна.', comment: 'О чём-то прекрасном но быстро исчезающем' },
+    { word: 'Sonder', translation: 'Осознание, что у каждого своя жизнь', transcription: '/ˈsɒn.dər/', example: 'Sitting in a café, she felt a deep sense of sonder.', exampleRu: 'Сидя в кафе, она остро осознала, что у каждого вокруг своя целая жизнь.', comment: 'Неологизм из Dictionary of Obscure Sorrows' },
+    { word: 'Mellifluous', translation: 'Медоточивый, сладкозвучный', transcription: '/məˈlɪf.lu.əs/', example: 'Her mellifluous voice filled the concert hall.', exampleRu: 'Её медовый голос наполнил весь концертный зал.', comment: 'О приятном звучании голоса или музыки' },
+    { word: 'Ineffable', translation: 'Невыразимый словами', transcription: '/ɪnˈef.ə.bəl/', example: 'The view from the mountain was ineffable.', exampleRu: 'Вид с горы не поддавался никакому описанию.', comment: 'Когда красота настолько велика, что нет слов' },
+    { word: 'Hiraeth', translation: 'Тоска по родине или прошлому', transcription: '/ˈhɪər.aɪθ/', example: 'She felt hiraeth every time she heard that old song.', exampleRu: 'Каждый раз когда звучала та старая песня, её охватывала необъяснимая тоска.', comment: 'Валлийское слово, нет точного перевода на русский' },
+    { word: 'Limerence', translation: 'Состояние влюблённости и навязчивых мыслей', transcription: '/ˈlɪm.ər.əns/', example: 'He was lost in limerence, thinking of her constantly.', exampleRu: 'Он был поглощён влюблённостью и думал о ней без остановки.', comment: 'Психологический термин Дороти Теннов' },
+    { word: 'Catharsis', translation: 'Очищение через сильные эмоции', transcription: '/kəˈθɑː.sɪs/', example: 'Crying during the film was a real catharsis for her.', exampleRu: 'Слёзы во время фильма стали для неё настоящим очищением.', comment: 'Из античной философии Аристотеля' },
+    { word: 'Susurrus', translation: 'Шёпот, тихий шелест', transcription: '/suːˈsʌr.əs/', example: 'The susurrus of leaves calmed her nerves.', exampleRu: 'Тихий шелест листьев успокоил её нервы.', comment: 'Поэтическое слово для нежного звука' },
+    { word: 'Vellichor', translation: 'Странная меланхолия в старом книжном магазине', transcription: '/ˈvel.ɪ.kɔːr/', example: 'She felt vellichor browsing dusty shelves for hours.', exampleRu: 'Часами перебирая пыльные полки, она погружалась в странную сладкую меланхолию.', comment: 'Ещё один неологизм из Dictionary of Obscure Sorrows' },
+    { word: 'Phosphene', translation: 'Свет, который видишь когда трёшь глаза', transcription: '/ˈfɒs.fiːn/', example: 'Pressing her palms to her eyes, she saw bright phosphenes.', exampleRu: 'Прижав ладони к глазам, она увидела яркие вспышки света.', comment: 'Визуальное ощущение без реального источника света' },
+    { word: 'Eudaimonia', translation: 'Счастье как состояние расцвета', transcription: '/juːˌdaɪˈməʊ.ni.ə/', example: 'True eudaimonia comes from living a meaningful life.', exampleRu: 'Настоящее счастье приходит от осмысленной жизни.', comment: 'Аристотель считал это высшей целью человека' },
+    { word: 'Kenopsia', translation: 'Жуткое ощущение от пустого многолюдного места', transcription: '/kɛˈnɒp.si.ə/', example: 'The empty stadium filled her with kenopsia.', exampleRu: 'Пустой стадион наполнял её странным жутковатым чувством.', comment: 'Торговый центр ночью, пустая школа летом' },
+    { word: 'Yugen', translation: 'Глубокое осознание красоты вселенной', transcription: '/juːˈɡen/', example: 'Watching the fog roll over the mountains, he felt yugen.', exampleRu: 'Наблюдая как туман стелется по горам, он ощутил глубокое единение с миром.', comment: 'Японская эстетическая концепция' },
+    { word: 'Quiddity', translation: 'Сущность, самая суть вещи', transcription: '/ˈkwɪd.ɪ.ti/', example: 'The quiddity of her art was impossible to define.', exampleRu: 'Саму суть её искусства невозможно было определить словами.', comment: 'Философский термин — то, что делает вещь собой' },
+    { word: 'Lassitude', translation: 'Усталость, вялость, апатия', transcription: '/ˈlæs.ɪ.tjuːd/', example: 'A profound lassitude overcame her after the journey.', exampleRu: 'После долгого путешествия её охватила глубокая усталость.', comment: 'Более поэтично чем просто tiredness' },
+    { word: 'Sempiternal', translation: 'Вечный, бесконечный', transcription: '/ˌsem.pɪˈtɜː.nəl/', example: 'Their love felt sempiternal, beyond time itself.', exampleRu: 'Их любовь казалась вечной, существующей вне времени.', comment: 'Возвышеннее чем eternal — вечность без начала и конца' },
+    { word: 'Labyrinthine', translation: 'Запутанный как лабиринт', transcription: '/ˌlæb.ɪˈrɪn.θaɪn/', example: 'The labyrinthine streets of the old city confused every tourist.', exampleRu: 'Запутанные улочки старого города сбивали с толку каждого туриста.', comment: 'О чём-то сложном и запутанном' },
+    { word: 'Numinous', translation: 'Внушающий благоговейный страх и восторг', transcription: '/ˈnjuː.mɪ.nəs/', example: 'Standing in the ancient temple felt truly numinous.', exampleRu: 'Стоять в древнем храме — это было поистине священное переживание.', comment: 'Ощущение чего-то священного и таинственного' },
   ];
   words.forEach(w => state.words.push({ id: uid(), langId, ...w }));
   saveState();
