@@ -66,6 +66,9 @@ const langSelectName = document.getElementById('lang-select-name');
 function renderTabs() {
   const lang = state.languages.find(l => l.id === state.activeLangId);
 
+  // показываем селектор только если языков больше одного
+  langSelectWrap.style.display = state.languages.length > 1 ? '' : 'none';
+
   // обновляем кнопку
   langSelectFlag.className = lang && lang.emoji ? `fi fi-${lang.emoji}` : '';
   langSelectFlag.style.display = lang && lang.emoji ? 'inline-block' : 'none';
