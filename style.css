@@ -66,6 +66,22 @@ header h1 {
 header h1::before { content: '🎀 '; }
 header h1::after  { content: ' 🎀'; }
 
+.header-actions { display: flex; align-items: center; gap: 10px; }
+
+.btn-demo {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  transition: all 0.18s;
+}
+.btn-demo:hover { background: rgba(255,255,255,0.35); border-color: rgba(255,255,255,0.7); }
+
 /* ===== LANG BAR ===== */
 .lang-bar {
   background: var(--surface);
