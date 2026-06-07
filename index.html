@@ -86,17 +86,38 @@
     <section id="section-flashcards" style="display:none">
       <div class="fc-header">
         <button class="btn-secondary" id="btn-back-to-list">← Назад</button>
+        <div class="fc-mode-toggle">
+          <button class="fc-mode-btn active" id="fc-mode-classic">Классика</button>
+          <button class="fc-mode-btn" id="fc-mode-game">Игра</button>
+        </div>
         <span id="fc-progress"></span>
       </div>
+
+      <div class="fc-nav">
+        <button class="fc-nav-btn" id="fc-nav-prev">←</button>
+        <button class="fc-nav-btn" id="fc-nav-next">→</button>
+      </div>
+
       <div class="fc-card" id="fc-card">
         <div class="fc-front" id="fc-front"></div>
         <div class="fc-back" id="fc-back" style="display:none"></div>
+
+        <!-- Классика -->
         <button class="btn-reveal" id="btn-reveal">Показать перевод</button>
         <div class="fc-buttons" id="fc-buttons" style="display:none">
           <button class="btn-no" id="btn-no">Не знал</button>
           <button class="btn-yes" id="btn-yes">Знал</button>
         </div>
+
+        <!-- Игра -->
+        <div class="fc-game-area" id="fc-game-area" style="display:none">
+          <input type="text" id="fc-game-input" placeholder="Введите перевод..." autocomplete="off" autocorrect="off" />
+          <button class="fc-game-check" id="fc-game-check">Проверить</button>
+          <div class="fc-game-result" id="fc-game-result" style="display:none"></div>
+          <button class="btn-reveal fc-game-hint" id="fc-game-hint">Посмотреть перевод</button>
+        </div>
       </div>
+
       <div id="fc-done" class="fc-done" style="display:none">
         <h2>Сессия завершена!</h2>
         <p id="fc-score"></p>
@@ -110,6 +131,7 @@
   <!-- МОДАЛ: ДОБАВИТЬ / РЕДАКТИРОВАТЬ СЛОВО -->
   <div class="modal-overlay" id="modal-word" style="display:none">
     <div class="modal">
+      <button class="view-close" id="btn-close-word-modal">✕</button>
       <h3 id="modal-word-title">Новое слово</h3>
       <form id="form-word">
         <label>Слово <span class="required">*</span>
@@ -194,6 +216,18 @@
       <div class="view-actions">
         <button class="view-btn-edit" id="view-btn-edit">✏️ Редактировать</button>
         <button class="view-btn-delete" id="view-btn-delete">🗑 Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ПАСХАЛКА -->
+  <div class="modal-overlay" id="modal-easter" style="display:none">
+    <div class="modal modal-sm easter-modal">
+      <div class="easter-content">
+        <div class="easter-hearts">🌸</div>
+        <div class="easter-text">Люблю тебя, сестрёнка!</div>
+        <div class="easter-sub">Этот словарик сделан специально для тебя ❤️</div>
+        <button class="btn-primary" id="btn-easter-close">Спасибо!</button>
       </div>
     </div>
   </div>

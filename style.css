@@ -317,6 +317,11 @@ main {
 }
 .fc-speak-btn:hover { opacity: 1; background: rgba(78,207,138,0.1); }
 
+#btn-add-word {
+  font-size: 12px;
+  padding: 8px 16px;
+}
+
 /* ===== BUTTONS ===== */
 .btn-primary {
   background: linear-gradient(135deg, var(--accent) 0%, var(--teal) 100%);
@@ -833,6 +838,9 @@ main {
   border: 1px solid var(--border2);
   position: relative;
   overflow: hidden;
+  touch-action: pan-y;
+  will-change: transform, opacity;
+  user-select: none;
 }
 .fc-card::before {
   content: '';
@@ -843,12 +851,73 @@ main {
   border-radius: 24px 24px 0 0;
 }
 
+/* ===== FC NAV ARROWS ===== */
+.fc-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.fc-nav-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+  font-family: 'Nunito', sans-serif;
+}
+.fc-nav-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+.fc-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ===== FC MODE TOGGLE ===== */
+.fc-mode-toggle {
+  display: flex;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 3px;
+  gap: 2px;
+}
+.fc-mode-btn {
+  background: none;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.fc-mode-btn.active {
+  background: var(--accent);
+  color: #0f1a14;
+}
+
 .fc-front { font-size: 38px; font-weight: 900; letter-spacing: -0.5px; color: var(--text); }
 
 .fc-back { display: flex; flex-direction: column; gap: 8px; animation: fadeIn 0.2s ease; }
-.fc-back .translation { font-size: 26px; font-weight: 800; color: var(--accent); }
+.fc-back .translation { font-size: 23px; font-weight: 800; color: var(--accent); }
 .fc-back .transcription { font-size: 14px; color: var(--teal); font-family: monospace; }
-.fc-back .example { font-size: 13px; color: var(--text-muted); font-style: italic; margin-top: 4px; font-weight: 600; }
+.fc-back .example { font-size: 18px; color: var(--text-soft); font-style: italic; margin-top: 4px; font-weight: 600; }
+.fc-back .fc-comment { font-size: 13px; color: var(--text-muted); font-style: normal; font-weight: 600; border-left: 2px solid var(--teal); padding: 4px 10px; margin-top: 4px; }
 
 .btn-reveal {
   background: var(--surface2);
@@ -897,6 +966,81 @@ main {
   transform: translateY(-2px);
 }
 
+/* ===== FC GAME MODE ===== */
+.fc-game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 340px;
+}
+
+#fc-game-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Nunito', sans-serif;
+  background: var(--surface2);
+  color: var(--text);
+  transition: all 0.18s;
+  text-align: center;
+}
+#fc-game-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(78,207,138,0.15);
+}
+#fc-game-input::placeholder { color: var(--text-muted); }
+#fc-game-input:disabled { opacity: 0.6; }
+
+.fc-game-check {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--teal));
+  color: #0f1a14;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.fc-game-check:hover { transform: translateY(-1px); box-shadow: var(--btn-shadow); }
+
+.fc-game-result {
+  font-size: 16px;
+  font-weight: 800;
+  padding: 10px 20px;
+  border-radius: 12px;
+  animation: fadeIn 0.2s ease;
+}
+.fc-game-result.correct {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(78,207,138,0.25);
+}
+.fc-game-result.wrong {
+  color: var(--danger);
+  background: var(--danger-dim);
+  border: 1px solid rgba(248,113,113,0.25);
+}
+.fc-game-correct-answer {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.fc-game-hint {
+  font-size: 13px;
+  padding: 8px 20px;
+  opacity: 0.7;
+}
+.fc-game-hint:hover { opacity: 1; }
+
 .fc-done {
   text-align: center; padding: 60px 20px;
   display: flex; flex-direction: column;
@@ -911,6 +1055,37 @@ main {
 #no-lang-state::before { content: '📚'; display: block; font-size: 56px; margin-bottom: 16px; }
 #no-lang-state h2 { font-size: 22px; font-weight: 900; margin-bottom: 10px; color: var(--text); }
 #no-lang-state p { color: var(--text-muted); margin-bottom: 28px; font-weight: 600; }
+
+/* ===== EASTER EGG ===== */
+.easter-modal {
+  text-align: center;
+  overflow: hidden;
+}
+.easter-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+}
+.easter-hearts {
+  font-size: 64px;
+  animation: easterBounce 0.8s ease infinite alternate;
+}
+@keyframes easterBounce {
+  from { transform: scale(1) rotate(-5deg); }
+  to   { transform: scale(1.15) rotate(5deg); }
+}
+.easter-text {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--accent);
+}
+.easter-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
 
 /* ===== ANIMATIONS ===== */
 @keyframes fadeIn {

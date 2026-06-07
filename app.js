@@ -334,6 +334,7 @@ formWord.addEventListener('submit', e => {
 });
 
 btnCancelWord.addEventListener('click', closeWordModal);
+document.getElementById('btn-close-word-modal').addEventListener('click', closeWordModal);
 modalWord.addEventListener('click', e => { if (e.target === modalWord) closeWordModal(); });
 
 /* ===== LANG MODAL ===== */
@@ -615,11 +616,29 @@ modalConfirm.addEventListener('click', e => {
 let fcWords = [];
 let fcIndex = 0;
 let fcScore = 0;
+let fcMode = 'classic'; // 'classic' | 'game'
+let fcGameAnswered = false;
 
 btnFlashcards.addEventListener('click', startFlashcards);
 document.getElementById('btn-back-to-list').addEventListener('click', exitFlashcards);
 document.getElementById('btn-fc-back').addEventListener('click', exitFlashcards);
 document.getElementById('btn-restart').addEventListener('click', startFlashcards);
+
+document.getElementById('fc-mode-classic').addEventListener('click', () => setFCMode('classic'));
+document.getElementById('fc-mode-game').addEventListener('click', () => setFCMode('game'));
+
+function setFCMode(mode) {
+  fcMode = mode;
+  document.getElementById('fc-mode-classic').classList.toggle('active', mode === 'classic');
+  document.getElementById('fc-mode-game').classList.toggle('active', mode === 'game');
+  if (fcWords.length > 0) {
+    fcIndex = 0;
+    fcScore = 0;
+    document.getElementById('fc-done').style.display = 'none';
+    document.getElementById('fc-card').style.display = 'flex';
+    showFCCard();
+  }
+}
 
 function startFlashcards() {
   const words = state.words.filter(w => w.langId === state.activeLangId);
@@ -649,10 +668,11 @@ function showFCCard() {
   const w = fcWords[fcIndex];
   document.getElementById('fc-progress').textContent = `${fcIndex + 1} / ${fcWords.length}`;
 
-  const front  = document.getElementById('fc-front');
-  const back   = document.getElementById('fc-back');
-  const reveal = document.getElementById('btn-reveal');
-  const btns   = document.getElementById('fc-buttons');
+  const front    = document.getElementById('fc-front');
+  const back     = document.getElementById('fc-back');
+  const reveal   = document.getElementById('btn-reveal');
+  const btns     = document.getElementById('fc-buttons');
+  const gameArea = document.getElementById('fc-game-area');
 
   front.innerHTML = `${esc(w.word)} <button class="fc-speak-btn" title="Произнести">🔊</button>`;
   front.querySelector('.fc-speak-btn').addEventListener('click', e => {
@@ -660,13 +680,32 @@ function showFCCard() {
     const lang = state.languages.find(l => l.id === w.langId);
     speak(w.word, lang ? lang.emoji : '');
   });
+
   back.style.display = 'none';
   back.innerHTML = `
     <div class="translation">${esc(w.translation)}</div>
     ${w.transcription ? `<div class="transcription">${esc(w.transcription)}</div>` : ''}
-    ${w.example ? `<div class="example">${esc(w.example)}</div>` : ''}`;
-  reveal.style.display = '';
-  btns.style.display = 'none';
+    ${w.example ? `<div class="example">${esc(w.example)}</div>` : ''}
+    ${w.comment ? `<div class="fc-comment">${esc(w.comment)}</div>` : ''}`;
+
+  if (fcMode === 'classic') {
+    reveal.style.display = '';
+    btns.style.display = 'none';
+    gameArea.style.display = 'none';
+  } else {
+    reveal.style.display = 'none';
+    btns.style.display = 'none';
+    gameArea.style.display = '';
+    fcGameAnswered = false;
+    const input = document.getElementById('fc-game-input');
+    const result = document.getElementById('fc-game-result');
+    input.value = '';
+    input.disabled = false;
+    result.style.display = 'none';
+    result.className = 'fc-game-result';
+    document.getElementById('fc-game-hint').style.display = '';
+    setTimeout(() => input.focus(), 50);
+  }
 }
 
 document.getElementById('btn-reveal').addEventListener('click', () => {
@@ -678,7 +717,68 @@ document.getElementById('btn-reveal').addEventListener('click', () => {
 document.getElementById('btn-yes').addEventListener('click', () => { fcScore++; nextFCCard(); });
 document.getElementById('btn-no').addEventListener('click', () => { nextFCCard(); });
 
+/* --- Game mode --- */
+function normalizeAnswer(str) {
+  return str.toLowerCase().trim()
+    .replace(/ё/g, 'е')
+    .replace(/[^а-яёa-z0-9\s]/gi, '')
+    .replace(/\s+/g, ' ');
+}
+
+function checkFCGameAnswer() {
+  if (fcGameAnswered) { nextFCCard(); return; }
+  const w = fcWords[fcIndex];
+  const input = document.getElementById('fc-game-input');
+  const result = document.getElementById('fc-game-result');
+  const userAnswer = normalizeAnswer(input.value);
+  if (!userAnswer) return;
+
+  // допускаем любой из вариантов если перевод содержит запятую или слеш
+  const variants = w.translation.split(/[,\/]/).map(v => normalizeAnswer(v));
+  const correct = variants.some(v => {
+    if (v === userAnswer) return true;
+    // допуск на 1 опечатку (расстояние Левенштейна ≤ 1)
+    if (Math.abs(v.length - userAnswer.length) > 1) return false;
+    let diff = 0;
+    const long = v.length > userAnswer.length ? v : userAnswer;
+    const short = v.length > userAnswer.length ? userAnswer : v;
+    for (let i = 0, j = 0; i < long.length; i++) {
+      if (long[i] !== short[j]) diff++; else j++;
+      if (diff > 1) return false;
+    }
+    return diff <= 1;
+  });
+
+  fcGameAnswered = true;
+  input.disabled = true;
+
+  if (correct) {
+    fcScore++;
+    result.textContent = '✓ Верно!';
+    result.className = 'fc-game-result correct';
+    result.style.display = '';
+    document.getElementById('fc-game-hint').style.display = 'none';
+    document.getElementById('fc-game-check').textContent = '→';
+  } else {
+    result.innerHTML = `✗ Неверно — <span class="fc-game-correct-answer">${esc(w.translation)}</span>`;
+    result.className = 'fc-game-result wrong';
+    result.style.display = '';
+    document.getElementById('fc-game-check').textContent = '→';
+  }
+}
+
+document.getElementById('fc-game-check').addEventListener('click', checkFCGameAnswer);
+document.getElementById('fc-game-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkFCGameAnswer();
+});
+
+document.getElementById('fc-game-hint').addEventListener('click', () => {
+  document.getElementById('fc-back').style.display = 'flex';
+  document.getElementById('fc-game-hint').style.display = 'none';
+});
+
 function nextFCCard() {
+  document.getElementById('fc-game-check').textContent = 'Проверить';
   fcIndex++;
   if (fcIndex >= fcWords.length) showFCDone();
   else showFCCard();
@@ -687,13 +787,109 @@ function nextFCCard() {
 function showFCDone() {
   document.getElementById('fc-card').style.display = 'none';
   document.getElementById('fc-done').style.display = 'flex';
-  document.getElementById('fc-score').textContent = `Знал: ${fcScore} из ${fcWords.length}`;
+  const label = fcMode === 'game' ? 'Правильно' : 'Знал';
+  document.getElementById('fc-score').textContent = `${label}: ${fcScore} из ${fcWords.length}`;
 }
 
 function exitFlashcards() {
   sectionFC.style.display = 'none';
   sectionWords.style.display = '';
 }
+
+/* ===== SWIPE & NAV ON FLASHCARDS ===== */
+(function() {
+  const card = document.getElementById('fc-card');
+  let startX = 0, startY = 0, isDragging = false, isHorizontal = null, animating = false;
+
+  function canAdvance() {
+    if (animating || fcWords.length === 0) return false;
+    if (document.getElementById('fc-done').style.display !== 'none') return false;
+    return true;
+  }
+
+  function flyOut(direction, cb) {
+    if (animating) return;
+    animating = true;
+    const dist = direction > 0 ? 600 : -600;
+    card.style.transition = 'transform 0.22s ease-in, opacity 0.22s ease-in';
+    card.style.transform = `translateX(${dist}px) rotate(${direction * 10}deg)`;
+    card.style.opacity = '0';
+    setTimeout(() => {
+      // сбрасываем без анимации
+      card.style.transition = 'none';
+      card.style.transform = `translateX(${-direction * 60}px)`;
+      card.style.opacity = '0';
+      cb();
+      // небольшая пауза чтобы DOM обновился
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          card.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
+          card.style.transform = '';
+          card.style.opacity = '1';
+          setTimeout(() => {
+            card.style.transition = '';
+            animating = false;
+          }, 220);
+        });
+      });
+    }, 230);
+  }
+
+  card.addEventListener('touchstart', e => {
+    if (animating) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isDragging = true;
+    isHorizontal = null;
+  }, { passive: true });
+
+  card.addEventListener('touchmove', e => {
+    if (!isDragging || animating) return;
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if (isHorizontal === null) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      isHorizontal = Math.abs(dx) > Math.abs(dy);
+    }
+    if (!isHorizontal) return;
+    card.style.transform = `translateX(${dx * 0.45}px) rotate(${dx * 0.02}deg)`;
+    card.style.opacity = String(Math.max(0.35, 1 - Math.abs(dx) / 280));
+  }, { passive: true });
+
+  card.addEventListener('touchend', e => {
+    if (!isDragging) return;
+    isDragging = false;
+    if (!isHorizontal) return;
+    const dx = e.changedTouches[0].clientX - startX;
+
+    if (Math.abs(dx) < 60 || !canAdvance()) {
+      // возврат на место
+      card.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+      card.style.transform = '';
+      card.style.opacity = '1';
+      setTimeout(() => { card.style.transition = ''; }, 220);
+      return;
+    }
+
+    if (fcMode === 'classic') {
+      if (dx > 0) flyOut(1, () => { fcScore++; nextFCCard(); });
+      else flyOut(-1, () => nextFCCard());
+    } else {
+      flyOut(dx > 0 ? 1 : -1, () => nextFCCard());
+    }
+  });
+
+  document.getElementById('fc-nav-prev').addEventListener('click', () => {
+    if (!canAdvance()) return;
+    flyOut(-1, () => nextFCCard());
+  });
+
+  document.getElementById('fc-nav-next').addEventListener('click', () => {
+    if (!canAdvance()) return;
+    if (fcMode === 'classic') flyOut(1, () => { fcScore++; nextFCCard(); });
+    else flyOut(1, () => nextFCCard());
+  });
+})();
 
 /* ===== WORD VIEW MODULE ===== */
 const modalView    = document.getElementById('modal-view');
@@ -839,6 +1035,31 @@ function speak(text, flagCode) {
   utter.rate = 0.9;
   window.speechSynthesis.speak(utter);
 }
+
+/* ===== EASTER EGG ===== */
+(function() {
+  let clicks = 0, timer = null;
+  document.querySelector('header h1').addEventListener('click', () => {
+    clicks++;
+    clearTimeout(timer);
+    timer = setTimeout(() => { clicks = 0; }, 2000);
+    if (clicks >= 5) {
+      clicks = 0;
+      lockScroll();
+      document.getElementById('modal-easter').style.display = 'flex';
+    }
+  });
+  document.getElementById('btn-easter-close').addEventListener('click', () => {
+    document.getElementById('modal-easter').style.display = 'none';
+    unlockScroll();
+  });
+  document.getElementById('modal-easter').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-easter')) {
+      document.getElementById('modal-easter').style.display = 'none';
+      unlockScroll();
+    }
+  });
+})();
 
 /* ===== INIT ===== */
 loadState();
