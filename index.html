@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Leyla's словарик 🎀</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#f06292" />
+
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Словарик" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" />
+</head>
+<body>
+
+  <!-- ШАПКА -->
+  <header>
+    <h1>Leyla's словарик</h1>
+    <div class="header-actions">
+      <button id="btn-flashcards" class="btn-secondary">Карточки</button>
+    </div>
+  </header>
+
+  <!-- ЯЗЫКОВЫЕ БЛОКИ (ТАБЫ) -->
+  <nav class="lang-tabs" id="lang-tabs">
+    <!-- заполняется JS -->
+    <button class="tab-add" id="btn-add-lang">+ Язык</button>
+  </nav>
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
+  <main id="main">
+
+    <!-- СПИСОК СЛОВ -->
+    <section id="section-words">
+      <div class="words-header">
+        <h2 id="words-title">Слова</h2>
+        <button class="btn-primary" id="btn-add-word">+ Добавить слово</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Поиск по слову или переводу..." autocomplete="off" />
+        <button class="search-clear" id="search-clear" style="display:none">✕</button>
+      </div>
+
+      <div id="words-empty" class="empty-state" style="display:none">
+        <p>Пока нет слов. Нажми «+ Добавить слово» чтобы начать.</p>
+      </div>
+
+      <table id="words-table">
+        <thead>
+          <tr>
+            <th>Слово</th>
+            <th>Перевод</th>
+            <th>Транскрипция</th>
+            <th>Пример</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="words-body">
+          <!-- заполняется JS -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- РЕЖИМ КАРТОЧЕК -->
+    <section id="section-flashcards" style="display:none">
+      <div class="fc-header">
+        <button class="btn-secondary" id="btn-back-to-list">← Назад</button>
+        <span id="fc-progress"></span>
+      </div>
+      <div class="fc-card" id="fc-card">
+        <div class="fc-front" id="fc-front"></div>
+        <div class="fc-back" id="fc-back" style="display:none"></div>
+        <button class="btn-reveal" id="btn-reveal">Показать перевод</button>
+        <div class="fc-buttons" id="fc-buttons" style="display:none">
+          <button class="btn-no" id="btn-no">Не знал</button>
+          <button class="btn-yes" id="btn-yes">Знал</button>
+        </div>
+      </div>
+      <div id="fc-done" class="fc-done" style="display:none">
+        <h2>Сессия завершена!</h2>
+        <p id="fc-score"></p>
+        <button class="btn-primary" id="btn-restart">Повторить</button>
+        <button class="btn-secondary" id="btn-fc-back">В словарь</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- МОДАЛ: ДОБАВИТЬ / РЕДАКТИРОВАТЬ СЛОВО -->
+  <div class="modal-overlay" id="modal-word" style="display:none">
+    <div class="modal">
+      <h3 id="modal-word-title">Новое слово</h3>
+      <form id="form-word">
+        <label>Слово <span class="required">*</span>
+          <input type="text" id="field-word" required placeholder="Например: serendipity" />
+        </label>
+        <label>Перевод <span class="required">*</span>
+          <input type="text" id="field-translation" required placeholder="Например: счастливая случайность" />
+        </label>
+        <label>Транскрипция <span class="optional">(необязательно)</span>
+          <input type="text" id="field-transcription" placeholder="Например: /ˌser.ənˈdɪp.ɪ.ti/" />
+        </label>
+        <label>Пример использования <span class="optional">(необязательно)</span>
+          <textarea id="field-example" rows="2" placeholder="Например: It was pure serendipity that we met."></textarea>
+        </label>
+        <label>Комментарий <span class="optional">(необязательно)</span>
+          <input type="text" id="field-comment" placeholder="Заметка или контекст" />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="btn-cancel-word">Отмена</button>
+          <button type="submit" class="btn-primary">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- МОДАЛ: ДОБАВИТЬ ЯЗЫК -->
+  <div class="modal-overlay" id="modal-lang" style="display:none">
+    <div class="modal modal-sm">
+      <h3>Новый языковой блок</h3>
+      <form id="form-lang">
+        <label>Название языка <span class="required">*</span>
+          <input type="text" id="field-lang-name" required placeholder="Например: Английский" />
+        </label>
+        <label>Флаг <span class="optional">(необязательно)</span>
+          <div class="flag-search-wrap">
+            <div class="flag-search-input-row">
+              <span class="flag-search-icon">🔍</span>
+              <span id="emoji-preview" class="flag-selected-preview"></span>
+              <input type="text" id="flag-search-input" placeholder="Начни вводить страну..." autocomplete="off" />
+              <button type="button" id="flag-clear-btn" style="display:none">✕</button>
+            </div>
+            <div class="flag-search-hint" id="flag-search-hint">Например: Англия, Россия, Германия</div>
+            <div id="flag-dropdown" class="flag-dropdown" style="display:none"></div>
+          </div>
+          <input type="hidden" id="field-lang-emoji" />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="btn-cancel-lang">Отмена</button>
+          <button type="submit" class="btn-primary">Создать</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- МОДАЛ: ПРОСМОТР СЛОВА -->
+  <div class="modal-overlay" id="modal-view" style="display:none">
+    <div class="modal-view-card">
+      <button class="view-close" id="btn-view-close">✕</button>
+      <div class="view-lang-badge" id="view-lang-badge"></div>
+      <div class="view-word" id="view-word"></div>
+      <div class="view-transcription" id="view-transcription"></div>
+      <div class="view-divider"></div>
+      <div class="view-section">
+        <div class="view-label">Перевод</div>
+        <div class="view-translation" id="view-translation"></div>
+      </div>
+      <div class="view-section" id="view-example-section">
+        <div class="view-label">Пример</div>
+        <div class="view-example" id="view-example"></div>
+      </div>
+      <div class="view-section" id="view-comment-section">
+        <div class="view-label">Комментарий</div>
+        <div class="view-comment" id="view-comment"></div>
+      </div>
+      <div class="view-actions">
+        <button class="view-btn-edit" id="view-btn-edit">✏️ Редактировать</button>
+        <button class="view-btn-delete" id="view-btn-delete">🗑 Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛ: ПОДТВЕРЖДЕНИЕ УДАЛЕНИЯ -->
+  <div class="modal-overlay" id="modal-confirm" style="display:none">
+    <div class="modal modal-sm">
+      <h3>Удалить слово?</h3>
+      <p id="confirm-text"></p>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="btn-confirm-no">Отмена</button>
+        <button class="btn-danger" id="btn-confirm-yes">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+  </script>
+</body>
+</html>

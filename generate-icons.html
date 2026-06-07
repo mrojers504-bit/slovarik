@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Генератор иконок</title></head>
+<body style="font-family:sans-serif;padding:20px;background:#fdf0f5">
+<h2>Генератор иконок для PWA</h2>
+<p>Нажми кнопку — иконки скачаются автоматически</p>
+<button onclick="generateAll()" style="background:#f06292;color:#fff;border:none;padding:12px 24px;border-radius:20px;font-size:16px;cursor:pointer;font-weight:700">
+  🎀 Создать иконки
+</button>
+<div id="previews" style="margin-top:20px;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap"></div>
+
+<script>
+function drawIcon(size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const r = size * 0.22;
+
+  // фон — градиент
+  const grad = ctx.createLinearGradient(0, 0, size, size);
+  grad.addColorStop(0, '#f06292');
+  grad.addColorStop(0.5, '#ce93d8');
+  grad.addColorStop(1, '#f48fb1');
+  ctx.beginPath();
+  roundRect(ctx, 0, 0, size, size, r);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // тортик эмодзи
+  ctx.font = `${size * 0.52}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🎂', size / 2, size / 2 + size * 0.04);
+
+  return canvas;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function download(canvas, name) {
+  const a = document.createElement('a');
+  a.download = name;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+function generateAll() {
+  const previews = document.getElementById('previews');
+  previews.innerHTML = '';
+  [[192,'icon-192.png'],[512,'icon-512.png'],[180,'icon-180.png']].forEach(([size, name]) => {
+    const canvas = drawIcon(size);
+    const small = document.createElement('canvas');
+    small.width = 80; small.height = 80;
+    small.getContext('2d').drawImage(canvas, 0, 0, 80, 80);
+    const wrap = document.createElement('div');
+    wrap.style.textAlign = 'center';
+    wrap.innerHTML = `<div style="font-size:12px;margin-bottom:4px">${name}</div>`;
+    wrap.appendChild(small);
+    previews.appendChild(wrap);
+    setTimeout(() => download(canvas, name), 100);
+  });
+  document.querySelector('p').textContent = '✅ Готово! Положи скачанные файлы в папку icons/ рядом с index.html';
+}
+</script>
+</body>
+</html>
