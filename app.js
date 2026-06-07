@@ -197,7 +197,9 @@ function renderWords() {
     if (clearBtn) clearBtn.style.display = searchQuery ? '' : 'none';
   }
 
-  const allWords = state.words.filter(w => w.langId === state.activeLangId);
+  const allWords = state.words
+    .filter(w => w.langId === state.activeLangId)
+    .sort((a, b) => a.word.localeCompare(b.word, undefined, { sensitivity: 'base' }));
   const q = searchQuery.toLowerCase().trim();
   const words = q
     ? allWords.filter(w =>
