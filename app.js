@@ -287,6 +287,7 @@ function esc(str) {
 let editingWordId = null;
 
 function openWordModal(word) {
+  lockScroll();
   editingWordId = word ? word.id : null;
   modalWordTitle.textContent = word ? 'Редактировать слово' : 'Новое слово';
   fieldWord.value        = word ? word.word : '';
@@ -303,6 +304,7 @@ function closeWordModal() {
   modalWord.style.display = 'none';
   formWord.reset();
   editingWordId = null;
+  unlockScroll();
 }
 
 formWord.addEventListener('submit', e => {
@@ -333,7 +335,17 @@ btnCancelWord.addEventListener('click', closeWordModal);
 modalWord.addEventListener('click', e => { if (e.target === modalWord) closeWordModal(); });
 
 /* ===== LANG MODAL ===== */
+function lockScroll() {
+  document.body.style.overflow = 'hidden';
+  document.body.style.touchAction = 'none';
+}
+function unlockScroll() {
+  document.body.style.overflow = '';
+  document.body.style.touchAction = '';
+}
+
 function openLangModal() {
+  lockScroll();
   fieldLangName.value = '';
   flagSearchInput.value = '';
   setFlagPreview('');
@@ -350,6 +362,7 @@ function closeLangModal() {
   flagSearchInput.value = '';
   setFlagPreview('');
   flagDropdown.style.display = 'none';
+  unlockScroll();
 }
 
 /* ===== FLAG SEARCH DATA ===== */
@@ -539,7 +552,7 @@ function confirmDeleteWord(word) {
   pendingDeleteLangId = null;
   pendingDeleteWordId = word.id;
   confirmText.textContent = `Удалить «${word.word}»?`;
-  modalConfirm.style.display = 'flex';
+  openConfirm();
 }
 
 function confirmDeleteLang(lang) {
@@ -549,8 +562,11 @@ function confirmDeleteLang(lang) {
     (wordCount > 0 ? ` Вместе с ним удалятся ${wordCount} сл${wordCount === 1 ? 'ово' : wordCount < 5 ? 'ова' : 'ов'}.` : '');
   pendingDeleteWordId = null;
   pendingDeleteLangId = lang.id;
-  modalConfirm.style.display = 'flex';
+  openConfirm();
 }
+
+function openConfirm() { lockScroll(); modalConfirm.style.display = 'flex'; }
+function closeConfirm() { modalConfirm.style.display = 'none'; unlockScroll(); }
 
 btnConfirmYes.addEventListener('click', () => {
   if (pendingDeleteWordId) {
@@ -568,19 +584,19 @@ btnConfirmYes.addEventListener('click', () => {
   }
   pendingDeleteWordId = null;
   pendingDeleteLangId = null;
-  modalConfirm.style.display = 'none';
+  closeConfirm();
 });
 
 btnConfirmNo.addEventListener('click', () => {
   pendingDeleteWordId = null;
   pendingDeleteLangId = null;
-  modalConfirm.style.display = 'none';
+  closeConfirm();
 });
 modalConfirm.addEventListener('click', e => {
   if (e.target === modalConfirm) {
     pendingDeleteWordId = null;
     pendingDeleteLangId = null;
-    modalConfirm.style.display = 'none';
+    closeConfirm();
   }
 });
 
@@ -674,6 +690,7 @@ const viewLangBadge= document.getElementById('view-lang-badge');
 let viewingWordId  = null;
 
 function openWordView(word) {
+  lockScroll();
   viewingWordId = word.id;
   const lang = state.languages.find(l => l.id === word.langId);
 
@@ -712,6 +729,7 @@ function openWordView(word) {
 function closeWordView() {
   modalView.style.display = 'none';
   viewingWordId = null;
+  unlockScroll();
 }
 
 document.getElementById('btn-view-close').addEventListener('click', closeWordView);
@@ -739,7 +757,7 @@ document.addEventListener('keydown', e => {
     closeWordModal();
     closeLangModal();
     closeWordView();
-    modalConfirm.style.display = 'none';
+    closeConfirm();
   }
 });
 
