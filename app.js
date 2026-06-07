@@ -1,5 +1,5 @@
 /* ===== STATE ===== */
-const STORAGE_KEY = 'leyla_dictionary';
+const STORAGE_KEY = 'leyla_dictionary_v2';
 
 let state = {
   languages: [],
@@ -739,13 +739,6 @@ document.addEventListener('keydown', e => {
 });
 
 /* ===== DEMO DATA ===== */
-document.getElementById('btn-demo').addEventListener('click', () => {
-  if (confirm('Загрузить 20 примеров необычных слов? Твои слова останутся.')) {
-    loadDemoData();
-    render();
-  }
-});
-
 function loadDemoData() {
   const langId = uid();
   state.languages.push({ id: langId, name: 'Английский', emoji: 'gb' });
@@ -778,6 +771,7 @@ function loadDemoData() {
 
 /* ===== INIT ===== */
 loadState();
+if (state.languages.length === 0) loadDemoData();
 if (state.languages.length > 0 && !state.activeLangId) {
   state.activeLangId = state.languages[0].id;
 }
