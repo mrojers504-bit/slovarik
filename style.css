@@ -367,6 +367,7 @@ main {
   z-index: 200;
   padding: 16px;
   animation: overlayIn 0.18s ease;
+  overflow-y: auto;
 }
 @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -380,6 +381,7 @@ main {
   animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   overflow: visible;
+  margin: auto;
 }
 .modal::before {
   content: '';
@@ -603,6 +605,7 @@ main {
   background-image:
     radial-gradient(circle at 90% 10%, rgba(255,182,193,0.22) 0%, transparent 50%),
     radial-gradient(circle at 10% 90%, rgba(201,125,212,0.14) 0%, transparent 50%);
+  margin: auto;
 }
 
 .view-close {
