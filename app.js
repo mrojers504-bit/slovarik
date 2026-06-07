@@ -335,13 +335,22 @@ btnCancelWord.addEventListener('click', closeWordModal);
 modalWord.addEventListener('click', e => { if (e.target === modalWord) closeWordModal(); });
 
 /* ===== LANG MODAL ===== */
+let scrollY = 0;
 function lockScroll() {
+  scrollY = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
   document.body.style.overflow = 'hidden';
-  document.body.style.touchAction = 'none';
 }
 function unlockScroll() {
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
   document.body.style.overflow = '';
-  document.body.style.touchAction = '';
+  window.scrollTo(0, scrollY);
 }
 
 function openLangModal() {
