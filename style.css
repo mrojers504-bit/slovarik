@@ -275,7 +275,7 @@ main {
 
 .td-word { font-weight: 800; font-size: 15px; color: var(--text); }
 .td-translation { color: var(--text); font-weight: 600; }
-.td-transcription { color: var(--text-muted); font-family: monospace; font-size: 13px; }
+.td-transcription { color: var(--lavender); font-family: monospace; font-size: 13px; font-weight: 700; }
 .td-example { color: var(--text-muted); font-size: 13px; font-style: italic; max-width: 220px; }
 .td-comment { font-size: 12px; color: #d4a0b8; display: block; margin-top: 3px; font-style: normal; font-weight: 600; }
 .td-actions { width: 76px; text-align: right; white-space: nowrap; }
@@ -646,8 +646,9 @@ main {
 
 .view-transcription {
   font-family: monospace;
-  font-size: 15px;
-  color: var(--text-muted);
+  font-size: 16px;
+  color: var(--lavender);
+  font-weight: 700;
   margin-bottom: 4px;
   min-height: 20px;
 }
