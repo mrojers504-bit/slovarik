@@ -25,7 +25,6 @@ function uid() {
 }
 
 /* ===== DOM REFS ===== */
-const langTabsEl    = document.getElementById('lang-tabs');
 const btnAddLang    = document.getElementById('btn-add-lang');
 const btnFlashcards = document.getElementById('btn-flashcards');
 const sectionWords  = document.getElementById('section-words');
@@ -56,43 +55,78 @@ const confirmText   = document.getElementById('confirm-text');
 const btnConfirmYes = document.getElementById('btn-confirm-yes');
 const btnConfirmNo  = document.getElementById('btn-confirm-no');
 
-/* ===== RENDER LANGUAGE TABS ===== */
+/* ===== LANG DROPDOWN ===== */
+const langSelectBtn  = document.getElementById('lang-select-btn');
+const langSelectWrap = document.getElementById('lang-select-wrap');
+const langDropdownEl = document.getElementById('lang-dropdown');
+const langSelectFlag = document.getElementById('lang-select-flag');
+const langSelectName = document.getElementById('lang-select-name');
+
 function renderTabs() {
-  langTabsEl.querySelectorAll('.lang-tab').forEach(el => el.remove());
+  const lang = state.languages.find(l => l.id === state.activeLangId);
 
-  state.languages.forEach(lang => {
-    const btn = document.createElement('button');
-    btn.className = 'lang-tab' + (lang.id === state.activeLangId ? ' active' : '');
-    btn.dataset.id = lang.id;
+  // обновляем кнопку
+  langSelectFlag.className = lang && lang.emoji ? `fi fi-${lang.emoji}` : '';
+  langSelectFlag.style.display = lang && lang.emoji ? 'inline-block' : 'none';
+  langSelectName.textContent = lang ? lang.name : 'Выбери язык';
 
-    if (lang.emoji) {
+  // рендерим список
+  langDropdownEl.innerHTML = '';
+  if (state.languages.length === 0) {
+    langDropdownEl.innerHTML = '<div class="lang-dropdown-empty">Нет языков — добавь первый!</div>';
+    return;
+  }
+  state.languages.forEach(l => {
+    const item = document.createElement('div');
+    item.className = 'lang-dropdown-item' + (l.id === state.activeLangId ? ' active' : '');
+
+    if (l.emoji) {
       const flag = document.createElement('span');
-      flag.className = `fi fi-${lang.emoji}`;
-      btn.appendChild(flag);
-      btn.appendChild(document.createTextNode(' '));
+      flag.className = `fi fi-${l.emoji}`;
+      item.appendChild(flag);
     }
-    btn.appendChild(document.createTextNode(lang.name));
+    const name = document.createElement('span');
+    name.className = 'lang-dropdown-item-name';
+    name.textContent = l.name;
+    item.appendChild(name);
 
     const del = document.createElement('span');
-    del.className = 'tab-delete';
-    del.title = 'Удалить язык';
+    del.className = 'lang-dropdown-delete';
     del.textContent = '✕';
+    del.title = 'Удалить';
     del.addEventListener('click', e => {
       e.stopPropagation();
-      confirmDeleteLang(lang);
+      closeLangDropdown();
+      confirmDeleteLang(l);
     });
-    btn.appendChild(del);
+    item.appendChild(del);
 
-    btn.addEventListener('click', () => {
-      state.activeLangId = lang.id;
+    item.addEventListener('click', () => {
+      state.activeLangId = l.id;
       searchQuery = '';
       saveState();
+      closeLangDropdown();
       render();
     });
 
-    langTabsEl.insertBefore(btn, btnAddLang);
+    langDropdownEl.appendChild(item);
   });
 }
+
+function openLangDropdown() {
+  langDropdownEl.style.display = '';
+  langSelectWrap.classList.add('open');
+}
+function closeLangDropdown() {
+  langDropdownEl.style.display = 'none';
+  langSelectWrap.classList.remove('open');
+}
+
+langSelectBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  langDropdownEl.style.display === 'none' ? openLangDropdown() : closeLangDropdown();
+});
+document.addEventListener('click', () => closeLangDropdown());
 
 /* ===== HIGHLIGHT ===== */
 function highlight(text, query) {

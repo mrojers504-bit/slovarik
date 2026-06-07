@@ -28,11 +28,20 @@
     </div>
   </header>
 
-  <!-- ЯЗЫКОВЫЕ БЛОКИ (ТАБЫ) -->
-  <nav class="lang-tabs" id="lang-tabs">
-    <!-- заполняется JS -->
+  <!-- ЯЗЫКОВОЙ СЕЛЕКТОР -->
+  <div class="lang-bar">
+    <div class="lang-select-wrap" id="lang-select-wrap">
+      <button class="lang-select-btn" id="lang-select-btn">
+        <span id="lang-select-flag"></span>
+        <span id="lang-select-name">Выбери язык</span>
+        <span class="lang-select-arrow">▾</span>
+      </button>
+      <div class="lang-dropdown" id="lang-dropdown" style="display:none">
+        <!-- заполняется JS -->
+      </div>
+    </div>
     <button class="tab-add" id="btn-add-lang">+ Язык</button>
-  </nav>
+  </div>
 
   <!-- ОСНОВНОЙ КОНТЕНТ -->
   <main id="main">
