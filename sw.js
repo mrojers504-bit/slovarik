@@ -1,4 +1,4 @@
-const CACHE = 'leyla-dict-v1';
+const CACHE = 'leyla-dict-v3';
 const ASSETS = [
   './index.html',
   './style.css',
@@ -24,14 +24,11 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(response => {
-        if (!response || response.status !== 200 || response.type === 'opaque') return response;
-        const clone = response.clone();
-        caches.open(CACHE).then(cache => cache.put(e.request, clone));
-        return response;
-      }).catch(() => caches.match('./index.html'));
-    })
+    fetch(e.request).then(response => {
+      if (!response || response.status !== 200 || response.type === 'opaque') return response;
+      const clone = response.clone();
+      caches.open(CACHE).then(cache => cache.put(e.request, clone));
+      return response;
+    }).catch(() => caches.match(e.request))
   );
 });
