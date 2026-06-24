@@ -3,8 +3,11 @@
 
 html, body {
   overflow-x: hidden;
-  max-width: 100%;
+  max-width: 100vw;
   width: 100%;
+}
+html {
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
@@ -56,7 +59,10 @@ header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   padding: 0 32px;
-  height: 62px;
+  padding-top: env(safe-area-inset-top);
+  padding-left: max(32px, env(safe-area-inset-left));
+  padding-right: max(32px, env(safe-area-inset-right));
+  min-height: calc(62px + env(safe-area-inset-top));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -97,7 +103,7 @@ header h1 {
 .lang-bar {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 10px 24px;
+  padding: 10px max(24px, env(safe-area-inset-left)) 10px max(24px, env(safe-area-inset-right));
   display: flex;
   align-items: center;
   gap: 10px;
