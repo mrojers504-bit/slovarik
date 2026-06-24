@@ -1036,6 +1036,63 @@ function speak(text, flagCode) {
   window.speechSynthesis.speak(utter);
 }
 
+/* ===== BACKUP ===== */
+(function() {
+  const btn = document.getElementById('btn-settings');
+  const menu = document.getElementById('settings-menu');
+
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    menu.style.display = menu.style.display === 'none' ? '' : 'none';
+  });
+  document.addEventListener('click', () => { menu.style.display = 'none'; });
+
+  document.getElementById('btn-backup-export').addEventListener('click', () => {
+    menu.style.display = 'none';
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const date = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `slovarik-backup-${date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  const fileInput = document.getElementById('backup-file-input');
+  document.getElementById('btn-backup-import').addEventListener('click', () => {
+    menu.style.display = 'none';
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!data.languages || !data.words) {
+          alert('Неверный формат файла.');
+          return;
+        }
+        state = data;
+        if (!state.activeLangId && state.languages.length > 0) {
+          state.activeLangId = state.languages[0].id;
+        }
+        saveState();
+        render();
+        alert('Бэкап восстановлен! Слов: ' + state.words.length);
+      } catch (_) {
+        alert('Ошибка чтения файла.');
+      }
+    };
+    reader.readAsText(file);
+    fileInput.value = '';
+  });
+})();
+
 /* ===== EASTER EGG ===== */
 (function() {
   let clicks = 0, timer = null;

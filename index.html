@@ -29,7 +29,15 @@
   <header>
     <h1>Leyla's словарик</h1>
     <div class="header-actions">
-<button id="btn-flashcards" class="btn-secondary">Карточки</button>
+      <button id="btn-flashcards" class="btn-secondary">Карточки</button>
+      <div class="settings-wrap">
+        <button id="btn-settings" class="btn-settings">⚙</button>
+        <div class="settings-menu" id="settings-menu" style="display:none">
+          <button id="btn-backup-export">📥 Скачать бэкап</button>
+          <button id="btn-backup-import">📤 Загрузить бэкап</button>
+        </div>
+      </div>
+      <input type="file" id="backup-file-input" accept=".json" style="display:none" />
     </div>
   </header>
 
