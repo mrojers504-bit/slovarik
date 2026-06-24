@@ -251,6 +251,22 @@
         regs.forEach(r => r.unregister());
       });
     }
+    // Auto-update: check version on every open
+    (function() {
+      var key = 'leyla_app_version';
+      fetch('version.json?t=' + Date.now())
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var saved = localStorage.getItem(key);
+          if (saved && saved !== String(data.v)) {
+            localStorage.setItem(key, String(data.v));
+            location.reload(true);
+          } else {
+            localStorage.setItem(key, String(data.v));
+          }
+        })
+        .catch(function() {});
+    })();
   </script>
 </body>
 </html>
